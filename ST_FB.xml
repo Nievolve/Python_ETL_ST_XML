@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<FunctionBlock xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="MotorControl">
+    <Vars accessSpecifier="private">
+        <Variable name="StartButton">
+            <Type>
+                <TypeName>BOOL</TypeName>
+            </Type>
+        </Variable>
+        <Variable name="StopButton">
+            <Type>
+                <TypeName>BOOL</TypeName>
+            </Type>
+        </Variable>
+        <Variable name="Emergency">
+            <Type>
+                <TypeName>BOOL</TypeName>
+            </Type>
+        </Variable>
+        <Variable name="MotorActive">
+            <Type>
+                <TypeName>BOOL</TypeName>
+            </Type>
+        </Variable>
+        <Variable name="Fault">
+            <Type>
+                <TypeName>BOOL</TypeName>
+            </Type>
+        </Variable>
+        <Variable name="RunLatch">
+            <Type>
+                <TypeName>BOOL</TypeName>
+            </Type>
+        </Variable>
+        <Variable name="Timer">
+            <Type>
+                <TypeName>TON</TypeName>
+            </Type>
+        </Variable>
+    </Vars>
+    <MainBody>
+        <BodyContent xsi:type="ST">
+            <ST><![CDATA[
+// --- LOGIK START ---
+
+// Hållkrets för start/stopp med prioritet på stopp
+IF NOT Emergency THEN
+    RunLatch := FALSE;
+    Fault := TRUE;
+ELSIF StopButton THEN
+    RunLatch := FALSE;
+    Fault := FALSE;
+ELSIF StartButton THEN
+    RunLatch := TRUE;
+    Fault := FALSE;
+END_IF;
+
+// Tilldela utgången
+MotorActive := RunLatch;
+
+// Exempel på timer: Räkna hur länge motorn varit aktiv (PT på 10 sekunder)
+Timer(IN := MotorActive, PT := T#10s);
+
+// --- LOGIK SLUT ---
+        ]]></ST>
+        </BodyContent>
+    </MainBody>
+</FunctionBlock>
